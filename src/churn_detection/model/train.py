@@ -84,8 +84,3 @@ def model_tune(X, y, model_name: str, model, param_grid: dict):
         mlflow.log_dict(report, artifact_file="classification_report.json")
 
     mlflow.end_run()
-
-
-def test():
-    print("this worked!")
-    return 1
