@@ -11,6 +11,8 @@ app = Flask(__name__)
 # logged_model = 'runs:/5009d9dbd0d243e8ab66b5b4db2f0530/model'
 # model = mlflow.sklearn.load_model(logged_model)
 
+model = fetch_model("staging")
+
 
 @app.route("/")
 def home():
@@ -28,7 +30,6 @@ def predict():
         df = pd.DataFrame([data])
 
         # Make predictions
-        model = fetch_model()
         predictions = model.predict(df)
 
         # Return predictions as JSON

@@ -19,8 +19,8 @@ def fetch_model(model_name: str):
 
     # Get the latest staging model version
     try:
-        model_version = client.get_latest_versions(model_name, stages=["staging"])[0]
-        model_uri = f"models:/{model_name}/staging"
+        model_version = client.get_latest_versions(model_name)[0]
+        model_uri = f"models:/{model_name}/latest"
 
         # Load the model
         model = mlflow.sklearn.load_model(model_uri)

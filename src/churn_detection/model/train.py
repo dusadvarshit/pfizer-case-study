@@ -89,7 +89,3 @@ def model_tune(X, y, model_name: str, model, param_grid: dict):
 def test():
     print("this worked!")
     return 1
-
-
-if __name__ == "__main__":
-    test()
