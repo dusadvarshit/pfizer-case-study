@@ -6,7 +6,7 @@ authors = [
     {name = "Varshit Dusad",email = "dusadvarshit@users.noreply.github.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
     "pandas (>=2.2.3,<3.0.0)",
     "scikit-learn (>=1.6.1,<2.0.0)",
@@ -31,3 +31,23 @@ pytest-cov = "^6.1.1"
 ruff = "^0.11.10"
 mypy = "^1.15.0"
 pre-commit = "^4.2.0"
+pydantic = "^2.11.4"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
