@@ -1,15 +1,15 @@
 import logging
 
-from pydantic import BaseModel, Field
+# from pydantic import Field
+# from pydantic.dataclasses import dataclass
 
 
-class CustomLogger(BaseModel):
-    name: str = Field(..., description="Name of the logger")
-    level: str = Field(default="INFO", description="Logging level")
-    logger: logging.Logger
-
-    def __post_init__(self) -> None:
+class CustomLogger:
+    def __init__(self, name, level="INFO") -> None:
         """Initialize the logger after class instantiation"""
+        self.name = name
+        self.level = level
+
         self.logger = logging.getLogger(self.name)
         self._set_level(self.level)
 
@@ -39,7 +39,7 @@ class CustomLogger(BaseModel):
         Args:
             new_level (str): New logging level to set
         """
-        self.config.level = new_level
+        self.level = new_level
         self._set_level(new_level)
 
     def get_logger(self) -> logging.Logger:
