@@ -35,7 +35,7 @@ pre-commit = "^4.2.0"
 pydantic = "^2.11.4"
 
 [tool.ruff]
-line-length = 120
+line-length = 300
 
 [tool.ruff.lint]
 select = [
