@@ -14,7 +14,7 @@ def read_local_data(path, target_col="Churn"):
 
     df = pd.read_csv(path)
     df["TotalCharges"] = df["TotalCharges"].apply(lambda x: float(x) if x != " " else 0)
-    df.loc[(df["TotalCharges"] == 0).index, "TotalCharges"] = df.loc[(df["TotalCharges"] == 0).index, "MonthlyCharges"]
+    df.loc[(df[df["TotalCharges"] == 0]).index, "TotalCharges"] = df.loc[(df[df["TotalCharges"] == 0]).index, "MonthlyCharges"]
     df.set_index("customerID", inplace=True)
 
     X = df.drop("Churn", axis=1)
