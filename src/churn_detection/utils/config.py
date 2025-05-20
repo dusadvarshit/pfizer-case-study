@@ -1,5 +1,6 @@
 import os
 
+from dotenv import load_dotenv
 from lightgbm import LGBMClassifier
 from sklearn.ensemble import (
     AdaBoostClassifier,
@@ -13,6 +14,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
+
+load_dotenv()
 
 if os.environ["ENV"] == "DEV":
     MLFLOW_TRACKING_URL = "http://localhost:8000" if os.name == "nt" else "http://mlflow:8000"
