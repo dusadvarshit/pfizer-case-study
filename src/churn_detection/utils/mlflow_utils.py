@@ -1,8 +1,12 @@
 import mlflow
+import mlflow.tracking
 from churn_detection.utils.config import MLFLOW_TRACKING_URL
-from mlflow.tracking import MlflowClient
+from churn_detection.utils.logger import CustomLogger
 
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URL)
+
+
+logger = CustomLogger("mlflow-utils").get_logger()
 
 
 def fetch_model(model_name: str):
@@ -15,11 +19,12 @@ def fetch_model(model_name: str):
     Returns:
         The loaded model from staging
     """
-    client = MlflowClient()
+    client = mlflow.tracking.MlflowClient()
 
     # Get the latest staging model version
     try:
         model_version = client.get_latest_versions(model_name)[0]
+        logger.info(f"Model version {model_version}")
         model_uri = f"models:/{model_name}/latest"
 
         # Load the model
