@@ -14,7 +14,10 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
-MLFLOW_TRACKING_URL = "http://localhost:8000" if os.name == "nt" else "http://mlflow:8000"
+if os.environ["ENV"] == "DEV":
+    MLFLOW_TRACKING_URL = "http://localhost:8000" if os.name == "nt" else "http://mlflow:8000"
+elif os.environ["ENV"] == "PROD":
+    MLFLOW_TRACKING_URL = "http://mlflow.TestCluster.local:8000"
 
 MLFLOW_ROOT_FOLDER = "../../../mlflow"
 
