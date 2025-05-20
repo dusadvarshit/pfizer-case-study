@@ -4,7 +4,7 @@ from flask import Flask, jsonify, render_template, request
 from churn_detection.utils.logger import CustomLogger
 from churn_detection.utils.mlflow_utils import fetch_model
 
-logger = CustomLogger("Eval").get_logger()
+logger = CustomLogger("App").get_logger()
 
 app = Flask(__name__)
 model = fetch_model("staging")
