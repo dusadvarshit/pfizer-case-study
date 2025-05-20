@@ -1,3 +1,5 @@
+import os
+
 from lightgbm import LGBMClassifier
 from sklearn.ensemble import (
     AdaBoostClassifier,
@@ -12,7 +14,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
-MLFLOW_TRACKING_URL = "http://localhost:8000"
+MLFLOW_TRACKING_URL = "http://localhost:8000" if os.name == "nt" else "http://mlflow:8000"
 
 MLFLOW_ROOT_FOLDER = "../../../mlflow"
 
