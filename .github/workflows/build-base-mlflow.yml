@@ -1,4 +1,4 @@
-name: Build and Push base image to Dockerhub
+name: Build and Push base+mlflow image to Dockerhub
 
 on:
   workflow_dispatch:
