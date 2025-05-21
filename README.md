@@ -64,6 +64,7 @@ tests/
     └── __init__.py               # Unit test definitions
 Dockerfile                        # Docker build instructions
 
+```
 
 ## 🔧 Features
 
