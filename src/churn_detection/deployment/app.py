@@ -8,12 +8,12 @@ from churn_detection.utils.mlflow_utils import fetch_model
 
 logger = CustomLogger("App").get_logger()
 
-if os.environ["ENV"] == "DEV":
-    model = fetch_model("staging")
-elif os.environ["ENV"] == "PROD":
-    model = fetch_model("production")
 
 app = Flask(__name__)
+if os.environ["ENV"] == "DEV":
+    model = fetch_model("production")  # staging
+elif os.environ["ENV"] == "PROD":
+    model = fetch_model("production")
 
 
 @app.route("/")
@@ -59,32 +59,34 @@ def predict():
 
 @app.route("/bulk_predict", methods=["POST"])
 def bulk_predict():
-    try:
-        # Get JSON data from the request
-        data = request.get_json()
+    # try:
+    # Get JSON data from the request
+    data = request.get_json()
+    print("Data received!")
 
-        # Convert JSON to DataFrame
-        logger.info(data)
-        df = pd.DataFrame(data)
+    # Convert JSON to DataFrame
+    logger.info(data)
+    df = pd.DataFrame(data)
 
-        # Make predictions
-        logger.info("Before prediction")
-        predictions = model.predict(df)
-        logger.info("After prediction")
+    # Make predictions
+    logger.info("Before prediction")
+    predictions = model.predict(df)
+    logger.info("After prediction")
 
-        # Return predictions as JSON
-        predictions = predictions.tolist()
-        predictions = ["Yes" if i == 1 else "No" for i in predictions]
-        return_data = []
-        for idx, _dict in enumerate(data):
-            _dict["churn_prediction"] = predictions[idx]
-            return_data.append(_dict)
+    # Return predictions as JSON
+    predictions = predictions.tolist()
+    print("Prediction length", len(predictions))
+    predictions = ["Yes" if i == 1 else "No" for i in predictions]
+    return_data = []
+    for idx, _dict in enumerate(data):
+        _dict["churn_prediction"] = predictions[idx]
+        return_data.append(_dict)
 
-        return jsonify(return_data)
+    return jsonify(return_data)
 
-    except Exception as e:
-        logger.info(f"ERROR during prediction! {str(e)}")
-        return jsonify({"error": str(e)}), 400
+    # except Exception as e:
+    #     logger.info(f"ERROR during prediction! {str(e)}")
+    #     return jsonify({"error": str(e)}), 400
 
 
 if __name__ == "__main__":
