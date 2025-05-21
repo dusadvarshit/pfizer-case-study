@@ -14,7 +14,6 @@ elif os.environ["ENV"] == "PROD":
     model = fetch_model("production")
 
 app = Flask(__name__)
-# model = fetch_model("staging")
 
 
 @app.route("/")
