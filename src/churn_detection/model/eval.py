@@ -2,7 +2,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score, roc_auc_score
 
-from churn_detection.utils.logger import CustomLogger
+from churn_detection.utils.logger import CustomLogger  #
 
 logger = CustomLogger("Eval").get_logger()
 
