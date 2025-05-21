@@ -82,8 +82,10 @@ Dockerfile                        # Docker build instructions
 # 🚀 Getting Started
 
 ## 1. Clone the Repository
+```
 git clone https://github.com/yourusername/churn-detection.git
 cd churn-detection/src
+```
 
 
 # 🧪 Running Tests
