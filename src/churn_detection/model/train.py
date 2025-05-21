@@ -1,4 +1,7 @@
 import numpy as np
+from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import Pipeline as imbpipeline
+from optuna.integration import OptunaSearchCV
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV, cross_validate
@@ -6,14 +9,15 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
 import mlflow
+from churn_detection.model.eval import get_all_metrics  #
 from churn_detection.utils.config import (
     MLFLOW_TRACKING_URL,
     binary_cols,
     categorical_cols,
     categorical_cols_mapping,
     ohe_cols,
-)
-from churn_detection.utils.io import split_train_test
+)  #
+from churn_detection.utils.io import split_train_test  #
 
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URL)
 
@@ -35,31 +39,41 @@ def build_preprocessor():
     return preprocessor
 
 
-def build_pipeline(preprocessor, model) -> Pipeline:
-    clf = Pipeline(steps=[("preprocess", preprocessor), ("model", model)])
+def build_pipeline(preprocessor, model, imbalanced=True) -> Pipeline:
+    if imbalanced:
+        smote = SMOTE(random_state=42)
+        clf = imbpipeline(steps=[("preprocess", preprocessor), ("smote", smote), ("model", model)])
+    else:
+        clf = Pipeline(steps=[("preprocess", preprocessor), ("model", model)])
 
     return clf
 
 
-def model_tune(X, y, model_name: str, model, param_grid: dict):
+def model_tune(X, y, model_name: str, model, param_grid: dict, search_algo: str, mlflow_expt_name: str):
     X_train, X_test, y_train, y_test = split_train_test(X, y)
 
+    mlflow.set_experiment(mlflow_expt_name)
     with mlflow.start_run(run_name=model_name):
         print(f"---{model_name}----")
 
         pipeline = build_pipeline(build_preprocessor(), model)
 
-        grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring="recall", refit=True)
+        if search_algo == "bayesian":
+            searcher = OptunaSearchCV(pipeline, param_grid, cv=5, scoring="recall", n_trials=50, n_jobs=-1)
+        elif search_algo == "grid":
+            searcher = GridSearchCV(pipeline, param_grid, cv=5, scoring="recall", refit=True)
 
         mlflow.set_tag("developer", "Varshit Dusad")
         mlflow.set_tag("model_name", model_name)
 
-        grid_search.fit(X_train, y_train)
-        mlflow.log_params(grid_search.best_params_)
+        searcher.fit(X_train, y_train)
+        mlflow.log_params(searcher.best_params_)
 
-        y_predict = grid_search.predict(X_test)
+        y_predict = searcher.predict(X_test)
+        best_estimator = searcher.best_estimator_
+
         scores = cross_validate(
-            grid_search,
+            best_estimator,
             X_train,
             y_train,
             cv=5,
@@ -72,15 +86,19 @@ def model_tune(X, y, model_name: str, model, param_grid: dict):
                 "mutual_info_score",
             ],
         )
-        scores = {metric: np.mean(value) for metric, value in scores.items()}
+        scores = {"train_cross_val_" + metric: np.mean(value) for metric, value in scores.items()}
         mlflow.log_metrics(scores)
 
         ## Log Model
-        mlflow.sklearn.log_model(grid_search.best_estimator_, "model")
+        mlflow.sklearn.log_model(searcher.best_estimator_, "model")
 
         ## Classification Report
-        report = classification_report(y_predict, y_test, output_dict=True)
+        report = classification_report(y_test, y_predict, output_dict=True)
 
         mlflow.log_dict(report, artifact_file="classification_report.json")
+
+        ## All metrics
+        metrics = get_all_metrics(y_test, y_predict)
+        mlflow.log_metrics(metrics)
 
     mlflow.end_run()
