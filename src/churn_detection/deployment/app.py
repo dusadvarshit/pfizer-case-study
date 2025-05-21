@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 from flask import Flask, jsonify, render_template, request
 
@@ -6,13 +8,13 @@ from churn_detection.utils.mlflow_utils import fetch_model
 
 logger = CustomLogger("App").get_logger()
 
-# if os.environ["ENV"] == "DEV":
-#     model = fetch_model("staging")
-# elif if os.environ["ENV"] == "PROD":
-#     model = fetch_model("production")
+if os.environ["ENV"] == "DEV":
+    model = fetch_model("staging")
+elif os.environ["ENV"] == "PROD":
+    model = fetch_model("production")
 
 app = Flask(__name__)
-model = fetch_model("staging")
+# model = fetch_model("staging")
 
 
 @app.route("/")
